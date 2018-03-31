@@ -5,6 +5,8 @@
 		<title>管理分区</title>
 		<!-- 导入jquery核心类库 -->
 		<script type="text/javascript" src="../../js/jquery-1.8.3.js"></script>
+		<!--导入ocupload的js文件-->
+		<script type="text/javascript" src="../../js/ocupload/jquery.ocupload-1.1.2.js" ></script>
 		<!-- 导入easyui类库 -->
 		<link rel="stylesheet" type="text/css" href="../../js/easyui/themes/default/easyui.css">
 		<link rel="stylesheet" type="text/css" href="../../js/easyui/themes/icon.css">
@@ -36,7 +38,24 @@
 			}
 			
 			function doImport(){
-				alert("导入");
+				//alert("导入");
+				$("#button-import").upload({
+					action:'../../sub_area_import',
+					onComplete:function(data){
+						alert("导入成功");
+					},
+					onSelect:function(){
+						//校验文件是否符合各式
+						this.autoSubmit=false;
+						var filename = this.filename();
+						var regex = /^.*\.(xls|xlsx)$/;
+						if(regex.test(filename)){
+							this.submit();
+						}else{
+							$.messager.alert("警告","只能上传Excel格式的文件","warning");
+						}
+					}
+				});
 			}
 			
 			//工具栏

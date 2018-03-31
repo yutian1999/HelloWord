@@ -30,11 +30,22 @@
 					pageList: [30,50,100],
 					pagination : true,
 					toolbar : toolbar,
-					url : "../../data/standard.json",
+					url : "../../standard_findPage",
 					idField : 'id',
 					columns : columns
 				});
+				
+					//保存收派标准
+				$("#save").click(function(){
+					//alert(123);
+					if($("#form").form('validate')){
+						$("#form").submit();
+					}else{
+						$.messager.alert("警告","表单中还有一些非法内容","warning");
+					}
+				});
 			});	
+			
 			
 			//工具栏
 			var toolbar = [ {
@@ -42,16 +53,26 @@
 				text : '增加',
 				iconCls : 'icon-add',
 				handler : function(){
-					alert('增加');
+					$("#form").form('reset');
+					$("#sid").val("");
+					$("#standardWindow").window('open');
 				}
 			}, {
 				id : 'button-edit',
 				text : '修改',
 				iconCls : 'icon-edit',
 				handler : function(){
-					alert('修改');
-				}
-			},{
+					//选中数据表格所有行
+					var rows = $("#grid").datagrid('getSelections');
+					if(rows.length != 1){
+						//选中不只行
+						$.messager.alert("警告","修改只能选中一行","warning");
+					}else{
+						var row  = rows[0];
+						$("#form").form('load',row);//数据回显
+						$("#standardWindow").window('open');
+					}
+			}},{
 				id : 'button-delete',
 				text : '作废',
 				iconCls : 'icon-cancel',
@@ -129,12 +150,12 @@
 
 			<div region="center" style="overflow:auto;padding:5px;" border="false">
 				
-				<form>
+				<form action="../../standard_save" method="post" id="form">
 					<table class="table-edit" width="80%" align="center">
 						<tr class="title">
 							<td colspan="2">收派标准信息
-								<!--提供隐藏域 装载id -->
-								<input type="hidden" name="id" />
+								<!--提供隐藏域 装载id 为了修改数据时进行回显-->
+								<input type="hidden" name="id" id="sid"/>
 							</td>
 						</tr>
 						<tr>

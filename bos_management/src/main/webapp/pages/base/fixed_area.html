@@ -15,16 +15,54 @@
 		<script type="text/javascript" src="../../js/easyui/ext/jquery.cookie.js"></script>
 		<script src="../../js/easyui/locale/easyui-lang-zh_CN.js" type="text/javascript"></script>
 		<script type="text/javascript">
+			$.fn.serializeJson=function(){  
+	            var serializeObj={};  
+	            var array=this.serializeArray();  
+	            var str=this.serialize();  
+	            $(array).each(function(){  
+	                if(serializeObj[this.name]){  
+	                    if($.isArray(serializeObj[this.name])){  
+	                        serializeObj[this.name].push(this.value);  
+	                    }else{  
+	                        serializeObj[this.name]=[serializeObj[this.name],this.value];  
+	                    }  
+	                }else{  
+	                    serializeObj[this.name]=this.value;   
+	                }  
+	            });  
+	            return serializeObj;  
+	        }; 
 			function doAdd(){
+				$("#form").form('reset');
 				$('#addWindow').window("open");
 			}
 			
 			function doEdit(){
-				alert("修改...");
+				//alert("修改...");
+				var rows = $("#grid").datagrid('getSelections');//选中所有的被勾选行
+				if(rows.length != 1){
+					//当前选中不只一行,数据无法回显
+					$.messager.alert("警告","修改必须选中一行","warning");
+				}else{
+					var row = rows[0];
+					$("#form").form('load',row);
+					$("#addWindow").window('open');
+				}
 			}
 			
 			function doDelete(){
-				alert("删除...");
+				//alert("删除...");
+				var rows = $("#grid").datagrid('getSelections');
+				if(rows.length == 0){
+					$.messager.alert("警告","删除必须选中","warning");
+				}else{
+					var array = new Array();
+					for(var i=0;i<rows.length;i++){
+						array.push(rows[i].id);
+					}
+					var ids = array.join("-");
+					window.location.href="../../fixedAera_dele?ids="+ids+"&a=3";
+				}
 			}
 			
 			function doSearch(){
@@ -32,7 +70,38 @@
 			}
 			
 			function doAssociations(){
-				$('#customerWindow').window('open');
+				var rows = $("#grid").datagrid('getSelections');
+				//进度条
+				$.messager.progress({
+					interval:300
+				});
+				if(rows.length == 1){
+					$('#customerWindow').window('open');
+					//ajax请求显示关联定区和未关联定区的客户
+					$("#customerFixedAreaId").val(rows[0].id);
+					//查询未关联的客户
+					$.post("../../fixedArea_noAssociationCustomers",function(data){
+						$("#noassociationSelect").empty();
+						$(data).each(function(){
+							var option = $("<option value="+this.id+">"+this.username+"("+this.address+")"+"</option>");
+							$("#noassociationSelect").append(option);
+						});
+						$.messager.progress('close');
+					});
+					
+					
+					//查询已关联的客户
+					$.post("../../fixedArea_hasAssociationCustomers",{"id":rows[0].id},function(data){
+						$("#associationSelect").empty();
+						$(data).each(function(){
+							var option = $("<option value="+this.id+">"+this.username+"("+this.address+")"+"</option>");
+							$("#associationSelect").append(option);
+						});
+					});
+				}else{
+					$.messager.alert("警告","定区关联客户,必须先选择一个定区","warning");
+				}
+				
 			}
 			
 			//工具栏
@@ -72,6 +141,7 @@
 						// 只选择了一个定区
 						// 弹出定区关联快递员 窗口 
 						$("#courierWindow").window('open');
+						$("#courierFixedAreaId").val(rows[0].id);
 					}else{
 						// 没有选中定区，或者选择 了多个定区
 						$.messager.alert("警告","关联快递员,只能（必须）选择一个定区","warning");
@@ -80,13 +150,13 @@
 			}];
 			// 定义列
 			var columns = [ [ {
-				field : 'id',
+				field : 'idnum',
 				title : '编号',
 				width : 80,
 				align : 'center',
 				checkbox:true
 			},{
-				field : 'fixedAreaNum',
+				field : 'id',
 				title : '定区编号',
 				width : 120,
 				align : 'center'
@@ -126,7 +196,7 @@
 					pageList: [30,50,100],
 					pagination : true,
 					toolbar : toolbar,
-					url : "../../data/fixed_area.json",
+					url : "../../fixedarea_findByPage",
 					idField : 'id',
 					columns : columns,
 					onDblClickRow : doDblClickRow
@@ -154,8 +224,46 @@
 			        resizable:false
 			    });
 				$("#btn").click(function(){
-					alert("执行查询...");
+					//alert("执行查询...");
+					var params = $("#searchForm").serializeJson();//表单数据转json
+					$("#grid").datagrid('load',params);//条件绑定数据表格
+					$("#searchWindow").window('close');//关闭查询窗口
 				});
+				
+				//添加定区
+				$("#save").click(function(){
+					if($("#form").form('validate')){
+						//合法数据
+						$("#form").submit();
+					}else{
+						//数据非法
+						$.messager.alert("警告","当前存在非法数据","warning");
+					}
+				});
+				
+				//定区关联客户的右移效果  此处有疑问  能添加过来很好理解  但是对方的option为什么会没有呢?
+				$("#toRight").click(function(){
+					$("#associationSelect").append($("#noassociationSelect option:selected"));
+				});
+				//定区关联客户左移
+				$("#toLeft").click(function(){
+					$("#noassociationSelect").append($("#associationSelect option:selected"));
+				});
+				
+				$("#associationBtn").click(function(){
+					//选中所有选中的表单option
+					$("#noassociationSelect option").attr("selected","selected");
+					$("#customerForm").submit();
+				})
+				
+				//定区关联快递员
+				$("#associationCourierBtn").click(function(){
+					if($("#courierForm").form('validate')){
+						$("#courierForm").submit();
+					}else{
+						$.messager.alert("警告","表单中还存在非法数据","warning");
+					}
+				})
 				
 			});
 		
@@ -284,7 +392,7 @@
 			</div>
 
 			<div style="overflow:auto;padding:5px;" border="false">
-				<form>
+				<form action="../../fixedarea_save" method="post" id="form">
 					<table class="table-edit" width="80%" align="center">
 						<tr class="title">
 							<td colspan="2">定区信息</td>
@@ -298,27 +406,25 @@
 						<tr>
 							<td>定区名称</td>
 							<td>
-								<input type="text" name="name" class="easyui-validatebox" required="true" />
+								<input type="text" name="fixedAreaName" class="easyui-validatebox" required="true" />
 							</td>
 						</tr>
 						<tr>
 							<td>选择负责人</td>
 							<td>
-								<input class="easyui-combobox" name="courier.id" data-options="valueField:'id',textField:'name',url:'../../data/courier.json'" />
+								<input class="easyui-combobox" name="fixedAreaLeader" data-options="valueField:'name',textField:'name',url:'../../courier_findAll'" />
 							</td>
 						</tr>
 						<tr height="300">
-							<td valign="top">关联分区</td>
+							<td valign="top">联系电话</td>
 							<td>
-								<table id="subareaGrid" class="easyui-datagrid" border="false" style="width:300px;height:300px" data-options="url:'../../data/fixedarea_subarea.json',fitColumns:true,singleSelect:false">
-									<thead>
-										<tr>
-											<th data-options="field:'id',width:30,checkbox:true">编号</th>
-											<th data-options="field:'addresskey',width:150">关键字</th>
-											<th data-options="field:'position',width:200,align:'right'">位置</th>
-										</tr>
-									</thead>
-								</table>
+								<input type="text" name="telephone" class="easyui-validatebox" required="true" />
+							</td>
+						</tr>
+						<tr height="300">
+							<td valign="top">所属公司</td>
+							<td>
+								<input type="text" name="company" class="easyui-validatebox" required="true" />
 							</td>
 						</tr>
 					</table>
@@ -328,7 +434,7 @@
 		<!-- 查询定区 -->
 		<div class="easyui-window" title="查询定区窗口" id="searchWindow" collapsible="false" minimizable="false" maximizable="false" style="top:20px;left:200px">
 			<div style="overflow:auto;padding:5px;" border="false">
-				<form>
+				<form id="searchForm">
 					<table class="table-edit" width="80%" align="center">
 						<tr class="title">
 							<td colspan="2">查询条件</td>
@@ -342,13 +448,13 @@
 						<tr>
 							<td>所属单位</td>
 							<td>
-								<input type="text" name="courier.company" class="easyui-validatebox" required="true" />
+								<input type="text" name="courier.company"/>
 							</td>
 						</tr>
 						<tr>
 							<td>分区</td>
 							<td>
-								<input type="text" name="subareaName" class="easyui-validatebox" required="true" />
+								<input type="text" name="subareaName"/>
 							</td>
 						</tr>
 						<tr>
@@ -360,9 +466,9 @@
 		</div>
 
 		<!-- 关联客户窗口 -->
-		<div class="easyui-window" title="关联客户窗口" id="customerWindow" collapsible="false" closed="true" minimizable="false" maximizable="false" style="top:20px;left:200px;width: 400px;height: 300px;">
+		<div class="easyui-window" title="关联客户窗口" id="customerWindow" collapsible="false" closed="true" minimizable="false" modal="true" maximizable="false" style="top:20px;left:200px;width: 400px;height: 300px;">
 			<div style="overflow:auto;padding:5px;" border="false">
-				<form id="customerForm" action="../../decidedzone_assigncustomerstodecidedzone.action" method="post">
+				<form id="customerForm" action="../../fixedArea_associationCustomers" method="post">
 					<table class="table-edit" width="80%" align="center">
 						<tr class="title">
 							<td colspan="3">关联客户</td>
@@ -370,7 +476,7 @@
 						<tr>
 							<td>
 								<input type="hidden" name="id" id="customerFixedAreaId" />
-								<select id="noassociationSelect" multiple="multiple" size="10"></select>
+								<select id="noassociationSelect" multiple="multiple" size="10" style="width: 150px;"></select>
 							</td>
 							<td>
 								<input type="button" value="》》" id="toRight">
@@ -378,7 +484,7 @@
 								<input type="button" value="《《" id="toLeft">
 							</td>
 							<td>
-								<select id="associationSelect" name="customerIds" multiple="multiple" size="10"></select>
+								<select id="associationSelect" name="customerIds" multiple="multiple" size="10" style="width: 150px;"></select>
 							</td>
 						</tr>
 						<tr>
@@ -404,13 +510,15 @@
 							<td>
 								<!-- 存放定区编号 -->
 								<input type="hidden" name="id" id="courierFixedAreaId" />
-								<input type="text" name="courierId" class="easyui-combobox" required="true" />
+								<input type="text" name="courierId" class="easyui-combobox" required="true" 
+									 data-options="valueField:'id',textField:'info',url:'../../courier_findnoassociation'"/>
 							</td>
 						</tr>
 						<tr>
 							<td>选择收派时间</td>
 							<td>
-								<input type="text" name="takeTimeId" class="easyui-combobox" required="true" />
+								<input type="text" name="takeTimeId" class="easyui-combobox" required="true" 
+									data-options="valueField:'id',textField:'name',url:'../../taketime_findAll'"/>
 							</td>
 						</tr>
 						<tr>

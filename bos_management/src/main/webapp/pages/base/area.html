@@ -63,7 +63,7 @@
 						array.push(rows[i].id);
 					}
 					var ids = array.join(",");
-					window.location.href="../../area_del?ids="+ids;
+					window.location.href="../../area_del.action?ids="+ids;
 				}
 			}
 			
@@ -145,7 +145,7 @@
 					pageList: [30,50,100],
 					pagination : true,
 					toolbar : toolbar,
-					url : "../../area_findByPage",
+					url : "../../area_findByPage.action",
 					idField : 'id',
 					columns : columns,
 					onDblClickRow : doDblClickRow
@@ -165,7 +165,7 @@
 			    //一件导入
 			    $("#button-import").upload({
 			    	enctype:'multipart/form-data',
-			    	action: '../../area_importBatch',
+			    	action: '../../area_importBatch.action',
 			    	onSelect:function(){
 			    		//选中文件修改默认不提交
 			    		this.autoSubmit = false;
@@ -222,7 +222,7 @@
 			</div>
 
 			<div region="center" style="overflow:auto;padding:5px;" border="false">
-				<form action="../../area_save" method="post" id="areaForm">
+				<form action="../../area_save.action" method="post" id="areaForm">
 					<table class="table-edit" width="80%" align="center">
 						<tr class="title">
 							<td colspan="2">区域信息</td>

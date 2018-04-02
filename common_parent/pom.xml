@@ -38,7 +38,13 @@
 			<artifactId>spring-context</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
-
+		<!-- https://mvnrepository.com/artifact/org.apache.xbean/xbean-spring -->
+		<dependency>
+		    <groupId>org.apache.xbean</groupId>
+		    <artifactId>xbean-spring</artifactId>
+		    <version>3.7</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
@@ -98,6 +104,11 @@
 		<dependency>
 			<groupId>org.apache.struts</groupId>
 			<artifactId>struts2-spring-plugin</artifactId>
+			<version>${struts2.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.struts</groupId>
+			<artifactId>struts2-json-plugin</artifactId>
 			<version>${struts2.version}</version>
 		</dependency>
 		<dependency>
@@ -240,6 +251,21 @@
 			<groupId>com.colobu</groupId>
 			<artifactId>fastjson-jaxrs-json-provider</artifactId>
 			<version>0.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>pinyin4j</groupId>
+			<artifactId>pinyin4j</artifactId>
+			<version>2.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>cn.itcast.maven</groupId>
+			<artifactId>crm_domain</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>javamail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.3.2</version>
 		</dependency>
 	</dependencies>
 

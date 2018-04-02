@@ -61,7 +61,7 @@
 						array.push(rows[i].id);
 					}
 					var ids = array.join("-");
-					window.location.href="../../fixedAera_dele?ids="+ids+"&a=3";
+					window.location.href="../../fixedAera_dele.action?ids="+ids+"&a=3";
 				}
 			}
 			
@@ -72,26 +72,26 @@
 			function doAssociations(){
 				var rows = $("#grid").datagrid('getSelections');
 				//进度条
-				$.messager.progress({
+				/*$.messager.progress({
 					interval:300
-				});
+				});*/
 				if(rows.length == 1){
 					$('#customerWindow').window('open');
 					//ajax请求显示关联定区和未关联定区的客户
 					$("#customerFixedAreaId").val(rows[0].id);
 					//查询未关联的客户
-					$.post("../../fixedArea_noAssociationCustomers",function(data){
+					$.post("../../fixedArea_noAssociationCustomers.action",function(data){
 						$("#noassociationSelect").empty();
 						$(data).each(function(){
 							var option = $("<option value="+this.id+">"+this.username+"("+this.address+")"+"</option>");
 							$("#noassociationSelect").append(option);
 						});
-						$.messager.progress('close');
+						//$.messager.progress('close');
 					});
 					
 					
 					//查询已关联的客户
-					$.post("../../fixedArea_hasAssociationCustomers",{"id":rows[0].id},function(data){
+					$.post("../../fixedArea_hasAssociationCustomers.action",{"id":rows[0].id},function(data){
 						$("#associationSelect").empty();
 						$(data).each(function(){
 							var option = $("<option value="+this.id+">"+this.username+"("+this.address+")"+"</option>");
@@ -196,7 +196,7 @@
 					pageList: [30,50,100],
 					pagination : true,
 					toolbar : toolbar,
-					url : "../../fixedarea_findByPage",
+					url : "../../fixedarea_findByPage.action",
 					idField : 'id',
 					columns : columns,
 					onDblClickRow : doDblClickRow
@@ -392,7 +392,7 @@
 			</div>
 
 			<div style="overflow:auto;padding:5px;" border="false">
-				<form action="../../fixedarea_save" method="post" id="form">
+				<form action="../../fixedarea_save.action" method="post" id="form">
 					<table class="table-edit" width="80%" align="center">
 						<tr class="title">
 							<td colspan="2">定区信息</td>
@@ -468,7 +468,7 @@
 		<!-- 关联客户窗口 -->
 		<div class="easyui-window" title="关联客户窗口" id="customerWindow" collapsible="false" closed="true" minimizable="false" modal="true" maximizable="false" style="top:20px;left:200px;width: 400px;height: 300px;">
 			<div style="overflow:auto;padding:5px;" border="false">
-				<form id="customerForm" action="../../fixedArea_associationCustomers" method="post">
+				<form id="customerForm" action="../../fixedArea_associationCustomers.action" method="post">
 					<table class="table-edit" width="80%" align="center">
 						<tr class="title">
 							<td colspan="3">关联客户</td>

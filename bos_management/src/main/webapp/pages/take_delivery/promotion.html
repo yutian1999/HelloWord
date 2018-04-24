@@ -85,16 +85,27 @@
 							text: '修改',
 							iconCls: 'icon-edit',
 							handler: function() {
-								alert('修改宣传任务');
+								//alert('修改宣传任务');
 							}
 						}, {
 							id: 'deleteBtn',
 							text: '作废',
 							iconCls: 'icon-cancel',
 							handler: function() {
-								alert('作废');
+								//alert('作废');
+								var rows = $("#grid").datagrid('getSelections');//选中所有数据
+								if(rows.length == 0){
+									$.messager.alert("警告","作废数据必须被选中","warning");
+								}else{
+									var array = new Array();
+									for(var i=0;i<rows.length;i++){
+										array.push(rows[i].id);
+									}
+									var ids = array.join(",");
+									//alert(ids);
+									window.location.href = "../../promotion_delete.action?ids="+ids;
 							}
-						},{
+						}},{
 							id: 'saveBtn',
 							text: '保存',
 							iconCls: 'icon-save',

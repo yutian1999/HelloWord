@@ -34,6 +34,7 @@
 			
 			function doSave(){
 				$("#grid").datagrid('endEdit',editIndex );
+			
 			}
 			
 			function doCancel(){
@@ -65,7 +66,7 @@
 			}];
 			// 定义列
 			var columns = [ [ {
-				field : 'id',
+				field : 'wayBillNum',
 				title : '工作单号',
 				width : 120,
 				align : 'center',
@@ -76,19 +77,8 @@
 					}
 				}
 			}, {
-				field : 'arrivecity',
+				field : 'arriveCity',
 				title : '到达地',
-				width : 120,
-				align : 'center',
-				editor :{
-					type : 'validatebox',
-					options : {
-						required: true
-					}
-				}
-			},{
-				field : 'product',
-				title : '产品',
 				width : 120,
 				align : 'center',
 				editor :{
@@ -146,13 +136,22 @@
 					pageList: [30,50,100],
 					pagination : true,
 					toolbar : toolbar,
-					url :  "",
+					url :  "../../wayBill_page.action",
 					idField : 'id',
 					columns : columns,
 					onDblClickRow : doDblClickRow,
 					onAfterEdit : function(rowIndex, rowData, changes){
 						console.info(rowData);
 						editIndex = undefined;
+							$.post("../../wayBill_save.action",rowData,function(data){
+								$.messager.show({
+									title : "保存提示",
+									msg : data.msg
+								});
+								
+							});
+							$("#grid").datagrid('reload');
+							
 					}
 				});
 			});

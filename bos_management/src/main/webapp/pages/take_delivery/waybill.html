@@ -25,9 +25,58 @@
 				// 对save按钮条件 点击事件
 				$('#save').click(function() {
 					// 对form 进行校验
-					if($('#orderForm').form('validate')) {
-						$('#orderForm').submit();
+					if($('#WayBillForm').form('validate')) {
+						//$('#WayBillForm').submit();
+						
+						
+						
+						//采用异步提交  将表单数据转换成字符串拼接成查询参数类型的格式
+						$.post("../../wayBill_save.action",$("#WayBillForm").serialize(),function(data){
+							if(data.success){
+								$.messager.show({
+									title : '提示窗口',
+									msg : data.msg
+								});
+							}
+							$("#WayBillForm").form('clear');
+						});
 					}
+				});
+				
+				//订单数据回显
+				$("#orderNum").blur(function(){
+					$.post("../../order_findByOrderNum.action",{orderNum:$(this).val()},function(data){
+						//返回数据 {success:true,orderData:orderData}
+						if(data.success){
+							//查询到订单
+							//alert(123);
+							$("#WayBillForm").form('load',data.order);
+							//手动 回显 回显不了的数据
+							$("#orderId").val(data.order.id);
+							$("input[name='order.courier.company']").val(data.order.courier.company);
+							$("input[name='order.courier.name']").val(data.order.courier.name);
+						}else{
+							//没有订单重置数据
+							$("#WayBillForm").form('clear');
+						}
+					});
+				});
+				
+				//运单数据回显
+				$("#wayBillNum").blur(function(){
+					$.post("../../WayBill_findByWayBillNum.action",{wayBillNum:$(this).val()},function(data){
+						if(data.success){
+							//数据回显
+							$("#WayBillForm").form('load',data.wayBill);
+							$("#wayBillID").val(data.wayBill.wid);
+							//$("input[name='num']").val(data.wayBill.num);
+							//$("input[name='actlweit']").val(data.wayBill.actlweit);
+						}else{
+							//数据重置
+							$("#WayBillForm").form('clear');
+						}
+					});
+					
 				});
 			});
 		</script>
@@ -39,7 +88,9 @@
 			<a id="save" icon="icon-save" href="#" class="easyui-linkbutton" plain="true">保存</a>
 			<a id="no" icon="icon-no" href="#" class="easyui-linkbutton" plain="true">取消</a>
 		</div>
+		
 		<div style="width:95%;margin:10px auto">
+			<form id="WayBillForm" action="../../WayBill_save.action" method="post">
 			<div class="table-top">
 				<table class="table-edit" width="95%">
 					<tr class="title">
@@ -49,10 +100,11 @@
 						<td>订单号</td>
 						<td>
 							<input type="hidden" name="order.id" id="orderId" />
-							<input type="text" name="order.orderNum" />
+							<input type="text" id="orderNum" name="order.orderNum" />
 						</td>
 						<td>运单号</td>
 						<td>
+							<input type="hidden" name="wid" id="wayBillID" />
 							<input type="text" name="wayBillNum" id="wayBillNum"/>
 						</td>
 					</tr>
@@ -265,7 +317,9 @@
 					</table>
 				</div>
 			</div>
-			<div class="clearfix"></div>		
+			
+			<div class="clearfix"></div>
+			</form>
 		</div>
 	</body>
 

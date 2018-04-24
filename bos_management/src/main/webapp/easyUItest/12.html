@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>datagrid添加一行数据demo</title>
+		<script type="text/javascript" src="../js/jquery-1.8.3.js" ></script>
+		<script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+		<link rel="stylesheet" href="../js/easyui/themes/default/easyui.css" />
+		<link rel="stylesheet" href="../js/easyui/themes/icon.css" />
+	</head>
+	<script type="text/javascript">
+		$(function(){
+			$("#grid").datagrid({
+				columns : [[
+					{
+						field:'id',
+						title:'编号',
+						width:100,
+						editor:{
+							type : 'validatebox',
+							option : {
+								required : true
+							}
+						}
+					},
+					{
+						field:'name',
+						title:'商品名称',
+						width:200,
+						editor:{
+							type : 'validatebox',
+							option : {
+								required : true
+							}
+						}
+					},
+					{
+						field:'price',
+						title:'商品价格',
+						width:200,
+						editor:{
+							type : 'validatebox',
+							option : {
+								required : true
+							}
+						}
+					}
+				]],
+				singleSelect : true,    //只能选中一行
+				url : 'product.json',
+				toolbar: [{
+					iconCls: 'icon-add',
+					text: '添加',
+					handler: function(){
+						
+							if(currentIndex != undefined){
+								return;
+							}
+							var checkrow = $("#grid").datagrid('selectRow',0);
+							//alert(checkrow[0].text());
+							if(checkrow != " "){
+								//插入一行
+								$("#grid").datagrid('insertRow',{
+									index : 0,
+									row : {}
+								});
+							}
+							
+							
+							//开始编辑
+							$("#grid").datagrid('beginEdit',0);
+							currentIndex = 0;
+						}
+				},{
+					iconCls: 'icon-save',
+					text: '保存',
+					handler: function(){
+						//alert('保存');
+						$("#grid").datagrid('endEdit',currentIndex);
+						currentIndex = undefined;
+						}
+				},{
+					iconCls: 'icon-cancel',
+					text: '取消',
+					handler: function(){
+						//alert('编辑按钮');
+							$("#grid").datagrid('cancelEdit',currentIndex);
+							if($("#grid").datagrid('getRows')[currentIndex].id == undefined){
+								$("#grid").datagrid('deleteRow',currentIndex);
+							}
+							currentIndex = undefined;
+						}
+				}]
+			});
+			var currentIndex ;
+		})
+	</script>
+	<body>
+		<table id="grid"></table>
+	</body>
+</html>

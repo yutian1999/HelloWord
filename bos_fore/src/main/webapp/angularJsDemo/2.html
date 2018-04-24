@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>angularJs入门案例二基于模块化实现mvc</title>
+		<!--引入angularjs的js文件-->
+		<script type="text/javascript" src="../js/angular.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.min.js" ></script>
+		<script type="text/javascript" src="../js/bootstrap.min.js" ></script>
+	</head>
+	<body>
+			<!--ng-app是模块名   ng-controller 是控制器-->
+		  <div ng-app="myapp" ng-controller="myctr">
+		  		<div>
+		  			<input type="text" name="name" ng-model="name" />
+		  		</div>
+		  		<div>
+		  			hello,{{name}}
+		  		</div>
+		  		
+		  </div>
+		  
+		  <script type="text/javascript">
+		  	/*初始化myapp模块*/
+		  	var myapp = angular.module("myapp",[]);
+		  	/*定义模块控制器,依赖注入scope域操作当前作用域的视图*/
+		  	myapp.controller("myctr",["$scope",function($scope){
+		  		$scope.name="黑马程序员";
+		  	}]);
+		  </script>
+	</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>数据表格编辑demo</title>
+		<script type="text/javascript" src="../js/jquery-1.8.3.js" ></script>
+		<script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+		<link rel="stylesheet" href="../js/easyui/themes/default/easyui.css" />
+		<link rel="stylesheet" href="../js/easyui/themes/icon.css" />
+	</head>
+	<script type="text/javascript">
+		$(function(){
+			$("#grid").datagrid({
+				columns : [[
+					{
+						field:'id',
+						title:'编号',
+						width:100
+					},
+					{
+						field:'name',
+						title:'商品名称',
+						width:200
+					},
+					{
+						field:'price',
+						title:'商品价格',
+						width:200,
+						editor:{
+							type : 'validatebox',
+							option : {
+								required : true
+							}
+						}
+					}
+				]],
+				singleSelect : true,    //只能选中一行
+				url : 'product.json',
+				toolbar: [{
+					iconCls: 'icon-edit',
+					text: '编辑',
+					handler: function(){
+						//alert('编辑按钮');
+						if(currentIndex != undefined){
+							return;
+						}
+						var row  = $("#grid").datagrid('getSelected');  //选中当前行
+						var index = $("#grid").datagrid('getRowIndex',row);
+						$("#grid").datagrid('beginEdit',index);
+						currentIndex = index;
+						}
+				},{
+					iconCls: 'icon-save',
+					text: '保存',
+					handler: function(){
+						//alert('保存');
+							$("#grid").datagrid('endEdit',currentIndex);
+							currentIndex = undefined;
+						}
+				},{
+					iconCls: 'icon-cancel',
+					text: '取消',
+					handler: function(){
+						//alert('编辑按钮');
+							$("#grid").datagrid('cancelEdit',currentIndex);
+							currentIndex = undefined;
+						}
+				}]
+			});
+			var currentIndex ;
+		})
+	</script>
+	<body>
+		<table id="grid"></table>
+	</body>
+</html>

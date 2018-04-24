@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>仿百度分页</title>
+		<!--jQuery-->
+		<script src="../js/jquery.min.js"></script>
+		<!--bootstrap的样式-->
+		<link rel="stylesheet" href="../css/bootstrap/bootstrap.min.css" />
+		<!--angularJs的代码-->
+		<script type="text/javascript" src="../js/angular.min.js" ></script>
+	</head>
+	<body ng-app="myapp" ng-controller="myController">
+		<table class="table table-bordered table-hover">
+			<tr>
+				<th>序号</th>
+				<th>商品编号</th>
+				<th>商品名称</th>
+				<th>商品价格</th>
+			</tr>
+			<tr ng-repeat="product in products">
+				<td>{{$index+1}}</td>
+				<td>{{product.id}}</td>
+				<td>{{product.name}}</td>
+				<td>{{product.price}}</td>
+			</tr>
+		</table>
+		<div>
+				<ul class="pagination pull-right">
+				<li>
+					<a href ng-click="prev()">上一页</a>
+				</li>
+				<li ng-repeat="page in pageList" ng-class="{active: isActivePage(page)}">
+					<a ng-click="selectPage(page)">{{ page }}</a>
+				</li>
+				<li>
+					<a href ng-click="next()">下一页</a>
+				</li>
+			</div>
+		<script type="text/javascript">
+			//初始化模块
+			var myapp = angular.module("myapp",[]);
+			myapp.controller("myController",["$scope","$http",function($scope,$http){
+				//定义分页所需的参数
+				$scope.currPage = 1;
+				$scope.pageSize = 12;
+				$scope.totalCount = 0;
+				$scope.totalPage = 0;
+				//定义一个数组 存放页码
+				$scope.pageList = new Array();
+				
+				$scope.selectPage = function(page){
+					
+					if($scope.totalPage != 0){
+						if(page < 1 || page > $scope.totalPage) return;
+					}
+					
+					$http({
+						method: 'GET',
+						params :{
+							"page" : page,
+							"rows" : $scope.pageSize
+						},
+						url :'6_'+page+'.json'
+					}).success(function(data,status,headers,config){
+						$scope.products = data.products;
+						$scope.totalCount = data.totalCount;
+						$scope.totalPage = Math.ceil($scope.totalCount / $scope.pageSize)
+						$scope.currPage = page;
+						
+						var begin = $scope.currPage - 5;
+						if(begin < 1){
+							begin = 1;
+						}
+						
+						var end  = begin + 9;
+						if(end > $scope.totalPage){
+							end = $scope.totalPage;
+							begin = end - 9;
+							if(begin < 1){
+								begin  = 1;
+							}
+						}
+						
+						$scope.pageList = [];
+						for(var i=begin ; i<=end;i++){
+							$scope.pageList.push(i);
+						}
+						
+					}).error(function(data,status,headers,config){
+						alert("出错,请联系管理员")
+					})
+				}
+				
+				//上一页
+				$scope.prev = function(){
+					if($scope.currPage > 1){
+						$scope.selectPage($scope.currPage - 1);
+					}
+				}
+				
+				//下一页
+				$scope.next = function(){
+					if($scope.currPage < $scope.totalPage){
+						$scope.selectPage($scope.currPage + 1);
+					}
+				}
+				
+				$scope.isActivePage = function(page){
+					return page === $scope.currPage;
+				}
+				
+				//初始化
+				$scope.selectPage(1);
+			}]);
+			
+		</script>
+		
+	</body>
+</html>

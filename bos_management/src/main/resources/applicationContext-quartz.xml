@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd ">
+ 	
+ 	
+ 	<!-- job -->
+ 	<bean id="promotionJob" 
+ 		class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+ 		<property name="jobClass" value="cn.itcast.bos.quartz.PromotionJob" />
+ 	</bean>
+ 	
+ 	<bean id="wayBillJob" 
+ 		class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+ 		<property name="jobClass" value="cn.itcast.bos.quartz.WayBillJob" />
+ 	</bean>
+ 	
+ 	<!-- trigger -->
+ 	<bean id="simpleTrigger1" 
+ 		class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+ 		<property name="jobDetail" ref="promotionJob" />
+ 		<!-- 3秒后第一次执行 -->
+ 		<property name="startDelay" value="0" />
+ 		<!-- 5秒后重复执行 -->
+ 		<property name="repeatInterval" value="600000" />
+ 	</bean>
+ 	
+ 	<!-- trigger -->
+ 	<bean id="simpleTrigger2" 
+ 		class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+ 		<property name="jobDetail" ref="wayBillJob" />
+ 		<!-- 3秒后第一次执行 -->
+ 		<property name="startDelay" value="0" />
+ 		<!-- 5秒后重复执行 -->
+ 		<property name="repeatInterval" value="10000000" />
+ 	</bean>
+ 	
+ 	<!-- scheduler  -->
+ 	<bean class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+ 		<property name="jobFactory" ref="jobFactory"></property>
+ 		<property name="triggers">
+ 			<list>
+ 				<ref bean="simpleTrigger1"/>
+ 				<ref bean="simpleTrigger2"/>
+ 			</list>
+ 		</property>
+ 	</bean>
+ 	
+</beans>

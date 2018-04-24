@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+	<script type="text/javascript" src="../js/jquery-1.8.3.js" ></script>
+	<script type="text/javascript" src="../js/easyui/jquery.easyui.min.js"></script>
+	<link rel="stylesheet" href="../js/easyui/themes/default/easyui.css" />
+	<link rel="stylesheet" href="../js/easyui/themes/icon.css" />
+	<!--引入ztree-->
+	<script type="text/javascript" src="../js/ztree/jquery.ztree.all-3.5.js" ></script>
+	<link rel="stylesheet" href="../js/ztree/zTreeStyle.css" />
+	<script type="text/javascript">
+		$(function(){
+			
+			/*$.messager.alert("标题","请不要乱点","warning");*/
+			
+			/*$.messager.confirm("标题","是否要删除",function(result){
+				if(result){
+					alert("执行删除");
+				}else{
+					alert("取消删除");
+				}
+			});*/
+			
+		/*	$.messager.prompt("prompt","please enter your name",function(result){
+				alert("Hello "+result);
+			});*/
+			
+			/*$.messager.show({
+				title: 'my title',
+				msg: 'message will close in 5 seconds',
+				timeout: 5000,
+				showType:'slide'
+			});*/
+			
+			$.messager.progress({
+				interval: 1000
+			});
+			window.setTimeout("$.messager.progress('close');",11000);
+		});
+	</script>
+	
+</html>

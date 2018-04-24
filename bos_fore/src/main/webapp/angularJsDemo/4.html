@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>集合遍历</title>
+		<!--引入angularjs的js文件-->
+		<script type="text/javascript" src="../js/angular.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.min.js" ></script>
+		<script type="text/javascript" src="../js/bootstrap.min.js" ></script>
+		<link rel="stylesheet" href="../css/bootstrap/bootstrap.css" />
+	</head>
+	<body>
+		<div ng-app="myapp" ng-controller="myctr">
+			<table class="table table-hover table-bordered" style="width: 99.9%;">
+				<tr>
+					<th>序号</th>
+					<th>商品编号</th>
+					<th>商品名称</th>
+					<th>数量</th>
+					<th>商品单价</th>
+					<th>总价</th>
+				</tr>
+				<tr ng-repeat="product in products">
+					<td>{{$index+1}}</td>
+					<td>{{product.id}}</td>
+					<td>{{product.name}}</td>
+					<td>
+						<a class="btn btn-default active" ng-click="product.count=product.count-1">-</a>
+						<input type="text" name="count" ng-model="product.count" style="width: 50px;"/>
+						<a class="btn btn-default active" ng-click="product.count=product.count+1">+</a>
+					</td>
+					<td>{{product.price}}</td>
+					<td>{{product.count * product.price}}</td>
+				</tr>
+				<tr>
+					<td colspan="4"></td>
+					<td>总计:</td>
+					<td><font color="red">{{getTotalMoney()}}</font></td>
+				</tr>
+			</table>
+		</div>
+		  
+	  <script type="text/javascript">
+	  	var myapp = angular.module("myapp",[]);
+	  	myapp.controller("myctr",["$scope",function($scope){
+	  		$scope.products=[
+	  			{
+	  				id:'1001',
+	  				name:'三星',
+	  				price:5888,
+	  				count:1
+	  			},
+	  			{
+	  				id:'1002',
+	  				name:'苹果',
+	  				price:5288,
+	  				count:1
+	  			},
+	  			{
+	  				id:'1003',
+	  				name:'华为',
+	  				price:3999,
+	  				count:1
+	  			},
+	  			{
+	  				id:'1004',
+	  				name:'小米',
+	  				price:1999,
+	  				count:1
+	  			}
+	  		];
+	  		$scope.getTotalMoney = function(){
+	  			var totalMoney = 0;
+	  			for(var i=0;i<$scope.products.length;++i){
+	  				totalMoney +=parseInt(($scope.products[i].price * $scope.products[i].count));
+	  			}
+	  			//alert(totalMoney);
+	  			return totalMoney;
+	  		}
+	  		
+	  	}]);
+	  </script>
+</body>
+</html>

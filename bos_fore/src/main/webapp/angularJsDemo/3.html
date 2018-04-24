@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>js绑定时间</title>
+		<!--引入angularjs的js文件-->
+		<script type="text/javascript" src="../js/angular.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.min.js" ></script>
+		<script type="text/javascript" src="../js/bootstrap.min.js" ></script>
+	</head>
+	<body>
+			<!--ng-app是模块名   ng-controller 是控制器-->
+		  <div ng-app="myapp" ng-controller="myctr">
+		  		<div>
+		  			<input type="text" name="name" ng-model="name" />
+		  			<!--绑定一个单击事件-->
+		  			<input type="button" value="清空" ng-click="name=''" />
+		  			<input type="button" value="添加" ng-click="add()" />
+		  		</div>
+		  		<div>
+		  			hello,{{name}}
+		  		</div>
+		  		
+		  </div>
+		  
+		  <script type="text/javascript">
+		  	/*初始化myapp模块*/
+		  	var myapp = angular.module("myapp",[]);
+		  	/*定义模块控制器,依赖注入scope域操作当前作用域的视图*/
+		  	myapp.controller("myctr",["$scope",function($scope){
+		  		$scope.name="黑马程序员";
+		  		/*方法体*/
+		  		/*$scope.clearVal = function(){
+		  			$scope.name="";
+		  		}*/
+		  		$scope.add = function(){
+		  			$scope.name="美女";
+		  		}
+		  	}]);
+		  </script>
+	</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>基于bootstrap的angular分页查询</title>
+		<script type="text/javascript" src="../js/jquery.min.js" ></script>
+		<script type="text/javascript" src="../js/angular.min.js"></script>
+		<link rel="stylesheet" href="../css/bootstrap/bootstrap.css" />
+	</head>
+	<body ng-app="tableApp" ng-controller="tabCotr">
+		<table class="table table-bordered table-hover">
+			<tr>
+				<th>序号</th>
+				<th>商品编号</th>
+				<th>商品名称</th>
+				<th>商品价格</th>
+			</tr>
+			<tr ng-repeat="product in products">
+				<td>{{$index+1}}</td>
+				<td>{{product.id}}</td>
+				<td>{{product.name}}</td>
+				<td>{{product.price}}</td>
+			</tr>
+		</table>
+		<div>
+			<ul class="pagination pull-right">
+				<li>
+					<a href ng-click="prev()">上一页</a>
+				</li>
+				<li ng-repeat="page in pageList" ng-class="{active: isActivePage(page)}">
+					<a ng-click="selectPage(page)">{{ page }}</a>
+				</li>
+				<li>
+					<a href ng-click="next()">下一页</a>
+				</li>
+			</ul>
+		</div>
+	</body>
+	<script type="text/javascript">
+		var myApp = angular.module("tableApp",[]);
+		myApp.controller("tabCotr",["$scope","$http",function($scope,$http){
+			//定义分页所需的参数
+			$scope.currentPage = 1;    //当前页
+			$scope.pageSize = 4;       //每页显示的条数
+			$scope.totalCount = 0;     //总记录数
+			$scope.totalPage = 0;      //总页数
+			
+			//定义分页显示的所有页码  将页码放在数组里
+			$scope.pageList = new Array();
+
+			
+			//加载上一页的数据
+			$scope.prev = function(){
+				$scope.selectPage($scope.currentPage -1);
+			}
+			//加载下一页的数据
+			$scope.next = function(){
+				$scope.selectPage($scope.currentPage + 1);
+			}
+			
+			$scope.selectPage = function(page){
+				//page 超出范围
+				
+				
+				if($scope.totalPage != 0 &&(page < 1 || page > $scope.totalPage)){
+					return;
+				}
+		
+			
+			//var page = 1;
+			
+				$http({
+					method:'GET',
+					url:'6_'+page+'.json',
+					params:{
+						page:page,
+						pageSize:$scope.pageSize
+					}
+				}).success(function(data,status,headers,config){
+					$scope.products = data.products;
+					$scope.totalCount = data.totalCount;
+					$scope.totalPage = Math.ceil($scope.totalCount / $scope.pageSize);
+					$scope.currentPage = page;
+					var begin;
+					var end;
+					begin = $scope.currentPage - 3;
+					if(begin < 1){
+						begin = 1;
+					}
+					
+					end  = begin + 7;
+					if(end > $scope.totalPage){
+						end = $scope.totalPage;
+					}
+					
+					begin = end - 7;
+					if(begin < 1){
+						begin = 1;
+					}
+					
+					//将页码放入集合
+					//$scope.pageList = [];
+					for(var i=begin;i<=end;i++){
+						//alert(page);
+						$scope.pageList.push(i);
+					}
+					
+				}).error(function(data,status,headers,config){
+					alert("出错,请联系管理员");
+				})
+			}
+			$scope.isActivePage = function(page){
+				return page === $scope.currentPage;
+			}
+			//初始化
+			$scope.selectPage(1);
+		}]);
+	</script>
+</html>
